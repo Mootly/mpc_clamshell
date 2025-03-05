@@ -1,6 +1,6 @@
 /** --- Clamshell Creator ----------------------------------------------------- *
 * mpc_clamshell 1.0.0
- * @copyright 2023 Mootly Obviate -- See /LICENSE.md
+ * @copyright 2023-2025 Mootly Obviate -- See /LICENSE.md
  * @license   MIT
  * @version   1.0.0
  * ---------------------------------------------------------------------------- *
@@ -9,7 +9,7 @@
  * All clamshells start open so all content is visible unless JS is enabled.
  * Clamshell/accordion fold any:
  *  - DL with a class of 'clamshell-list'
- *  - DL with a class of 'example-box'
+ *  - DIV with a class of 'example-box'
  *  - Headings of type H# in a DIV with a class of 'clamshell' and 'use-h#'
  *  - Folded items: DD and any blockwith class of 'clamfold'
  * Tasks:
@@ -21,7 +21,7 @@
  * - Not fully tested for more than two levels of nesting
  * - Collapser immediately follows its heading
  * - Same heading level is used for folds across page
- * - Uses Font Awesome
+ * - Original uses Font Awesome and assuems a fully CSS solution for icons
  * - Generates the following classes (arrows denote nesting):
  *   .list-header > .right-link > .all-link|.morelink
  *   .hidden
@@ -31,15 +31,15 @@
  *   ...
  * };
  * --- Revision History ------------------------------------------------------- *
+ * 2025-03-05 | Moved to a repo folder and documented
  * 2023-12-27 | Started new typescript / vanilla JS version
  * ---------------------------------------------------------------------------- */
 class mpc_clamshell {
-  constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dt, .clamheader', pClamfold = 'dd, .clamfold', pIconlist = 'icon-family, icon-list, icon-openlist, icon-closedlist', pHidden = 'hidden', pAuto = true) {
-    let t_icons = pIconlist.split(/,\s*/);
-    this.ico_family = t_icons[0];
-    this.ico_showall = t_icons[1];
-    this.ico_open = t_icons[2];
-    this.ico_closed = t_icons[3];
+  constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dt, .clamheader', pClamfold = 'dd, .clamfold', pIconFam = null, pIconList = null, pIconOpen = null, pIconClosed = null, pHidden = 'hidden', pShow = 'show', pAuto = true) {
+    this.ico_family = pIconFam;
+    this.ico_showall = pIconList;
+    this.ico_open = pIconOpen;
+    this.ico_closed = pIconClosed;
     this.tar_list = pClamlist;
     this.arr_list = pClamlist.split(/,\s*/);
     this.arr_fold = pClamfold.split(/,\s*/);
@@ -52,17 +52,21 @@ class mpc_clamshell {
     this.cs_list = document.querySelectorAll(this.tar_list);
     this.cs_block = document.querySelectorAll(this.tar_fold);
     this.cs_label = document.querySelectorAll(this.tar_label);
-    this.setLabelIds();
     if (pAuto) {
-      // yep, close everything then reopen what we want           *
-      this.closeAll();
-      this.addListHeaders();
-      this.checkHash();
-      window.addEventListener('hashchange', (el) => { this.checkHash(); });
-      this.cs_label.forEach((el) => {
-        el.addEventListener('click', (ev) => { this.checkClick(ev.target.closest(this.tar_label)); });
-      });
+      this.setStates();
     }
+  }
+  /* --- If not auto, invoke this ----------------------------------------------- */
+  setStates() {
+    this.setLabelIds();
+    // yep, close everything then reopen what we want           *
+    this.closeAll();
+    this.addListHeaders();
+    this.checkHash();
+    window.addEventListener('hashchange', (el) => { this.checkHash(); });
+    this.cs_label.forEach((el) => {
+      el.addEventListener('click', (ev) => { this.checkClick(ev.target.closest(this.tar_label)); });
+    });
   }
   /* --- Initialization Methods - Prepping the page ----------------------------- */
   // Clamshell section labels should have IDs                 *
