@@ -1,6 +1,7 @@
 # MoosePlum Clamshell / Accordion Fold Manager
 
-Thid script does the following:
+This script does the following:
+
 - Collapse designated clamshell/accordion elements after page load.
 - Add "open all" headers to set of clamshell elements.
 - Manage openign and closing of elements.
