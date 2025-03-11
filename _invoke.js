@@ -1,5 +1,5 @@
 /*! --- Implementation Example for Script ------------------------------------- *
- * Copyright (c) 2025 Mootly Obviate -- See /LICENSE.md
+ * Copyright (c) 2023-2025 Mootly Obviate -- See /LICENSE.md
  * ---------------------------------------------------------------------------- */
                     // All Icon parameters are required but have no defaults    *
 const clam_list     = '.clamshell, .example-box';
@@ -18,6 +18,6 @@ let mp = {
 //...
 };
                     // only invoke these manually if auto=false                 *
-// window.addEventListener('load', (e) => { mp.clamshell.setState(); });
+// window.addEventListener('DOMContentLoaded', (e) => { mp.clamshell.setState(); });
 
 /* ---------------------------------------------------------------------------- */

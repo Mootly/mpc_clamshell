@@ -68,6 +68,10 @@ Collapser immediately follows its heading.
 
 Same heading level is used for folds across page.
 
+For collapsing divisions, assumes the classes `clamshell`, `clamheader`, and `clamfold` for the three components of the clamshell: container, fold header, and fold body. Additional classes can be added but it will look for these and will add the appropriate class to fold headers if the container has a `use-h#` class specified.
+
+Clamshell headings that are to be linked to from external sources should have hard-coded Ids. Auto-generated IDs use tie-breaker strings to prevent duplicate IDs. This means the assigned ID can change if content elsewhere in the page changes.
+
 Original built with Font Awesome icons specified through CSS. Since it is jsut assigning classes you can swap that with anything you can specify through CSS.
 
 ### Recommended HTML Code
@@ -114,7 +118,7 @@ Remember to adjust the font sizes of headings in accordion sections down from th
 | pIconFam    | string  | null                       | Class name for font family call.        |
 | pIconList   | string  | null                       | Class name for toggle all icon.         |
 | pIconOpen   | string  | null                       | Class name for open item indicator.     |
-| pIconClosed | string  | null                       | Class name for closed item iindicator.  |
+| pIconClosed | string  | null                       | Class name for closed item indicator.   |
 | pHidden     | string  | 'hidden'                   | Class name for hidden elements.         |
 | pShow       | string  | 'show'                     | Class name for visible elements.        |
 | pAuto       | boolean | true                       | Whether to automatically fold sections. |
@@ -155,5 +159,5 @@ let mp = {
 If auto is set to false, manually invoke the clamshell handler on load.
 
 ```js
-window.addEventListener('load', (e) => { mp.clamshell.setState(); });
+window.addEventListener('DOMContentLoaded', (e) => { mp.clamshell.setState(); });
 ```

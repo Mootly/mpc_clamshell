@@ -1,8 +1,8 @@
 /** --- Clamshell Creator ----------------------------------------------------- *
-* mpc_clamshell 1.0.0
+* mpc_clamshell 1.0.1
  * @copyright 2023-2025 Mootly Obviate -- See /LICENSE.md
  * @license   MIT
- * @version   1.0.0
+ * @version   1.0.1
  * ---------------------------------------------------------------------------- *
  * Collapse any clamshell/accordion elements after page load.
  * ---------------------------------------------------------------------------- *
@@ -31,11 +31,13 @@
  *   ...
  * };
  * --- Revision History ------------------------------------------------------- *
+ * 2025-03-10 | Added DOMContentLoaded handler to avoid edge cases.
  * 2025-03-05 | Moved to a repo folder and documented
  * 2023-12-27 | Started new typescript / vanilla JS version
  * ---------------------------------------------------------------------------- */
 class mpc_clamshell {
   constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dt, .clamheader', pClamfold = 'dd, .clamfold', pIconFam = null, pIconList = null, pIconOpen = null, pIconClosed = null, pHidden = 'hidden', pShow = 'show', pAuto = true) {
+    this.headerIdx = 1;
     this.ico_family = pIconFam;
     this.ico_showall = pIconList;
     this.ico_open = pIconOpen;
@@ -49,12 +51,22 @@ class mpc_clamshell {
     this.tar_fold = (this.arr_list.map((x) => this.arr_fold.map((y) => x + ' ' + y))).join(',');
     this.tar_label = (this.arr_list.map((x) => this.arr_label.map((y) => x + ' ' + y))).join(',');
     this.class_hidden = pHidden;
-    this.cs_list = document.querySelectorAll(this.tar_list);
-    this.cs_block = document.querySelectorAll(this.tar_fold);
-    this.cs_label = document.querySelectorAll(this.tar_label);
-    if (pAuto) {
-      this.setStates();
-    }
+    window.addEventListener('DOMContentLoaded', (ev) => {
+      this.cs_list = document.querySelectorAll(this.tar_list);
+      this.cs_list?.forEach((el) => {
+        let tPClass = el.classList.toString();
+        let tHeader = tPClass.match(/use-h\d/)?.toString().slice(-2);
+        if (tHeader) {
+          let tAddClassSet = el.querySelectorAll(tHeader);
+          tAddClassSet?.forEach((el) => { el.classList.add('clamheader'); });
+        }
+      });
+      this.cs_block = document.querySelectorAll(this.tar_fold);
+      this.cs_label = document.querySelectorAll(this.tar_label);
+      if (pAuto) {
+        this.setStates();
+      }
+    });
   }
   /* --- If not auto, invoke this ----------------------------------------------- */
   setStates() {
@@ -72,7 +84,6 @@ class mpc_clamshell {
   // Clamshell section labels should have IDs                 *
   // but if they were omitted, create them.                   *
   setLabelIds() {
-    let idCount = 1;
     let el_linkText = '';
     if (this.cs_label) {
       this.cs_label.forEach((el) => {
@@ -83,7 +94,7 @@ class mpc_clamshell {
           return false;
         }
         if (!(el.hasAttribute('id'))) {
-          el.id = 'clam-' + (idCount++) + '-' + (el_linkText
+          el.id = 'clam-' + (this.headerIdx++) + '-' + (el_linkText
             .replace(/[`~!@#$%^&*()|+=?;'",.<>{}[\]\\/]/gi, '')
             .trim().replace(/ /g, '-')).substring(0, 24);
         }
@@ -114,8 +125,13 @@ class mpc_clamshell {
       else {
         tHeader = document.createElement('div');
       }
-      tHeader.className = 'cl-header ' + this.ico_family + ' ' + this.ico_showall;
-      tHeader.id = el.id + '-header';
+      tHeader.className = 'list-header ' + this.ico_family + ' ' + this.ico_showall;
+      // Not elegant, but self documenting                        *
+      let tHeaderString = el.id + '-header';
+      if (tHeaderString == '-header') {
+        tHeaderString = 'clam-' + (this.headerIdx++) + tHeaderString;
+      }
+      tHeader.id = tHeaderString;
       tHeader.textContent = 'Show All';
       el.prepend(tHeader);
       document.getElementById(tHeader.id)?.addEventListener('click', (ev) => { this.checkAll(ev.target); });
@@ -192,7 +208,7 @@ class mpc_clamshell {
       let tItems = tList.querySelectorAll(this.tar_label);
       if (tItems) {
         tItems.forEach((el) => {
-          if (!el.classList.contains('cl-header')) {
+          if (!el.classList.contains('list-header')) {
             this.checkClick(el, tDir);
           }
         });
