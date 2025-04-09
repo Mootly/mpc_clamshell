@@ -25,6 +25,22 @@
  * - Generates the following classes (arrows denote nesting):
  *   .list-header > .right-link > .all-link|.morelink
  *   .hidden
+ * ------
+ * ### Constructor Arguments
+ *
+ * name        | default                    | description
+ * ----        | -------                    | -----------
+ * pClamList   | '.clamshell, .example-box' | CSS selector for containers.
+ * pClamLabel  | 'dt, .clamheader'          | CSS selector for accordion headers.
+ * pClamFold   | 'dd, .clamfold'            | CSS selectors for accordion bodies.
+ * pIconFam    | null                       | Class name for font family call.
+ * pIconList   | null                       | Class name for toggle all icon.
+ * pIconOpen   | null                       | Class name for open item indicator.
+ * pIconClosed | null                       | Class name for closed item indicator.
+ * pHidden     | 'hidden'                   | Class name for hidden elements.
+ * pShow       | 'show'                     | Class name for visible elements.
+ * pAuto       | true                       | Whether to automatically fold sections.
+ *
  * *** Initialize - Example --------------------------------------------------- *
  * let mp = {
  *   rotator: new mpc_bannerRotator(container ID, box class, tab class, switch ID),
@@ -53,16 +69,16 @@ class mpc_clamshell{
   cs_label          : NodeListOf<HTMLElement> | null;
   cs_block          : NodeListOf<HTMLElement> | null;
   constructor(
-    pClamlist       = '.clamshell, dl.example-box',
-    pClamlabel      = 'dt, .clamheader',
-    pClamfold       = 'dd, .clamfold',
-    pIconFam        = null,
-    pIconList       = null,
-    pIconOpen       = null,
-    pIconClosed     = null,
-    pHidden         = 'hidden',
-    pShow           = 'show',
-    pAuto           = true
+    pClamlist       : string  = '.clamshell, dl.example-box',
+    pClamlabel      : string  = 'dt, .clamheader',
+    pClamfold       : string  = 'dd, .clamfold',
+    pIconFam        : string  = null,
+    pIconList       : string  = null,
+    pIconOpen       : string  = null,
+    pIconClosed     : string  = null,
+    pHidden         : string  = 'hidden',
+    pShow           : string  = 'show',
+    pAuto           : boolean = true
   ) {
     this.headerIdx  = 1;
     this.ico_family = pIconFam;
@@ -190,7 +206,7 @@ setStates() {
     }
   }
                     // Toggle fold on direct select                             *
-  checkClick(el, direction='') {
+  checkClick(el : Element, direction : string = '') {
     if (el.matches(this.tar_label)) {
       if (el.nextElementSibling) {
         let next_el  = el.nextElementSibling as HTMLElement;
@@ -219,7 +235,7 @@ setStates() {
     }
   }
                   // Toggle list of fold on open all                            *
-  checkAll(el) {
+  checkAll(el : Element) {
     let tList       = el.closest(this.tar_list);
     let tLabel      = el.textContent;
     let tDir        = (tLabel == 'Show All') ? 'Show ' : 'Hide ';
