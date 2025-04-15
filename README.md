@@ -110,18 +110,18 @@ Remember to adjust the font sizes of headings in accordion sections down from th
 
 ### Parameters
 
-| name        | type    | default                    | description                             |
-| ----------- | ------- | -------------------------- | --------------------------------------- |
-| pClamList   | string  | '.clamshell, .example-box' | CSS selector for containers.            |
-| pClamLabel  | string  | 'dt, .clamheader'          | CSS selector for accordion headers.     |
-| pClamFold   | string  | 'dd, .clamfold'            | CSS selectors for accordion bodies.     |
-| pIconFam    | string  | null                       | Class name for font family call.        |
-| pIconList   | string  | null                       | Class name for toggle all icon.         |
-| pIconOpen   | string  | null                       | Class name for open item indicator.     |
-| pIconClosed | string  | null                       | Class name for closed item indicator.   |
-| pHidden     | string  | 'hidden'                   | Class name for hidden elements.         |
-| pShow       | string  | 'show'                     | Class name for visible elements.        |
-| pAuto       | boolean | true                       | Whether to automatically fold sections. |
+| name        | type    | default                        | description                             |
+| ----------- | ------- | ------------------------------ | --------------------------------------- |
+| pClamList   | string  | '.clamshell, .example-box'     | CSS selector for containers.            |
+| pClamLabel  | string  | 'dl.clamshell>dt, .clamheader' | CSS selector for accordion headers.     |
+| pClamFold   | string  | 'dl.clamshell>dd, .clamfold'   | CSS selectors for accordion bodies.     |
+| pIconFam    | string  | null                           | Class name for font family call.        |
+| pIconList   | string  | null                           | Class name for toggle all icon.         |
+| pIconOpen   | string  | null                           | Class name for open item indicator.     |
+| pIconClosed | string  | null                           | Class name for closed item indicator.   |
+| pHidden     | string  | 'hidden'                       | Class name for hidden elements.         |
+| pShow       | string  | 'show'                         | Class name for visible elements.        |
+| pAuto       | boolean | true                           | Whether to automatically fold sections. |
 
 The icon parameters are **required** but don't have a default. Their values depend on third party resources, so we can't just suggest you use a given class for them. Ths script was originally built on a site using Font Awesome 4, so the icon paramaters for that site were:
 

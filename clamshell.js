@@ -25,18 +25,35 @@
  * - Generates the following classes (arrows denote nesting):
  *   .list-header > .right-link > .all-link|.morelink
  *   .hidden
+ * ------
+ * ### Constructor Arguments
+ *
+ * name        | default                        | description
+ * ----        | -------                        | -----------
+ * pClamList   | '.clamshell, .example-box'     | CSS selector for containers.
+ * pClamLabel  | 'dl.clamshell>dt, .clamheader' | CSS selector for accordion headers.
+ * pClamFold   | 'dl.clamshell>dd, .clamfold'   | CSS selectors for accordion bodies.
+ * pIconFam    | null                           | Class name for font family call.
+ * pIconList   | null                           | Class name for toggle all icon.
+ * pIconOpen   | null                           | Class name for open item indicator.
+ * pIconClosed | null                           | Class name for closed item indicator.
+ * pHidden     | 'hidden'                       | Class name for hidden elements.
+ * pShow       | 'show'                         | Class name for visible elements.
+ * pAuto       | true                           | Whether to automatically fold sections.
+ *
  * *** Initialize - Example --------------------------------------------------- *
  * let mp = {
  *   rotator: new mpc_bannerRotator(container ID, box class, tab class, switch ID),
  *   ...
  * };
  * --- Revision History ------------------------------------------------------- *
+ * 2025-04-15 | Fixed keybaord operation and issues with nested DL.
  * 2025-03-10 | Added DOMContentLoaded handler to avoid edge cases.
  * 2025-03-05 | Moved to a repo folder and documented
  * 2023-12-27 | Started new typescript / vanilla JS version
  * ---------------------------------------------------------------------------- */
 class mpc_clamshell {
-  constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dt, .clamheader', pClamfold = 'dd, .clamfold', pIconFam = null, pIconList = null, pIconOpen = null, pIconClosed = null, pHidden = 'hidden', pShow = 'show', pAuto = true) {
+  constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dl.clamshell>dt, .clamheader', pClamfold = 'dl.clamshell>dd, .clamfold', pIconFam = null, pIconList = null, pIconOpen = null, pIconClosed = null, pHidden = 'hidden', pShow = 'show', pAuto = true) {
     this.headerIdx = 1;
     this.ico_family = pIconFam;
     this.ico_showall = pIconList;
@@ -58,9 +75,14 @@ class mpc_clamshell {
         let tHeader = tPClass.match(/use-h\d/)?.toString().slice(-2);
         if (tHeader) {
           let tAddClassSet = el.querySelectorAll(tHeader);
-          tAddClassSet?.forEach((el) => { el.classList.add('clamheader'); });
+          tAddClassSet?.forEach((el) => {
+            el.classList.add('clamheader');
+            el.setAttribute('tabindex', '0');
+          });
         }
       });
+      window.addEventListener('mousedown', () => { this.mouseTrigger = true; });
+      window.addEventListener('mouseup', () => { this.mouseTrigger = false; });
       this.cs_block = document.querySelectorAll(this.tar_fold);
       this.cs_label = document.querySelectorAll(this.tar_label);
       if (pAuto) {
@@ -78,6 +100,30 @@ class mpc_clamshell {
     window.addEventListener('hashchange', (el) => { this.checkHash(); });
     this.cs_label.forEach((el) => {
       el.addEventListener('click', (ev) => { this.checkClick(ev.target.closest(this.tar_label)); });
+      el.addEventListener('focusin', (ev) => {
+        if (!(this.mouseTrigger)) {
+          this.checkClick(ev.target.closest(this.tar_label));
+        }
+      });
+      el.addEventListener('focusout', (ev) => {
+        if (!(this.mouseTrigger)) {
+          this.checkClick(ev.target.closest(this.tar_label));
+        }
+      });
+      this.cs_block.forEach((el) => {
+        el.addEventListener('focusin', (ev) => {
+          let pLabel = (ev.target.closest(this.tar_fold)).previousElementSibling;
+          if (!(this.mouseTrigger)) {
+            this.checkClick(pLabel, 'Show ');
+          }
+        });
+        el.addEventListener('focusout', (ev) => {
+          let pLabel = (ev.target.closest(this.tar_fold)).previousElementSibling;
+          if (!(this.mouseTrigger)) {
+            this.checkClick(pLabel, 'Hide ');
+          }
+        });
+      });
     });
   }
   /* --- Initialization Methods - Prepping the page ----------------------------- */
@@ -133,6 +179,7 @@ class mpc_clamshell {
       }
       tHeader.id = tHeaderString;
       tHeader.textContent = 'Show All';
+      el.setAttribute('tabindex', '0');
       el.prepend(tHeader);
       document.getElementById(tHeader.id)?.addEventListener('click', (ev) => { this.checkAll(ev.target); });
     });
@@ -216,4 +263,4 @@ class mpc_clamshell {
     }
   }
 }
-/*! -- Copyright (c) 2023-2024 Mootly Obviate -- See /LICENSE.md -------------- */
+/*! -- Copyright (c) 2023-2025 Mootly Obviate -- See /LICENSE.md -------------- */
