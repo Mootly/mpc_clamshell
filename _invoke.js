@@ -3,8 +3,8 @@
  * ---------------------------------------------------------------------------- */
                     // All Icon parameters are required but have no defaults    *
 const clam_list     = '.clamshell, .example-box';
-const clam_label    = 'dt, .clamheader';
-const clam_fold     = 'dd, .clamfold';
+const clam_label    = 'dl.clamshell>dt, .clamheader';
+const clam_fold     = 'dl.clamshell>dd, .clamfold';
 const clam_icoFam   = null;
 const clam_icoList  = null;
 const clam_icoOpen  = null;
