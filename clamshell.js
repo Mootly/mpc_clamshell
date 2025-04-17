@@ -1,8 +1,8 @@
 /** --- Clamshell Creator ----------------------------------------------------- *
-* mpc_clamshell 1.0.1
+* mpc_clamshell 1.0.3
  * @copyright 2023-2025 Mootly Obviate -- See /LICENSE.md
  * @license   MIT
- * @version   1.0.1
+ * @version   1.0.3
  * ---------------------------------------------------------------------------- *
  * Collapse any clamshell/accordion elements after page load.
  * ---------------------------------------------------------------------------- *
@@ -28,18 +28,18 @@
  * ------
  * ### Constructor Arguments
  *
- * name        | default                        | description
- * ----        | -------                        | -----------
- * pClamList   | '.clamshell, .example-box'     | CSS selector for containers.
- * pClamLabel  | 'dl.clamshell>dt, .clamheader' | CSS selector for accordion headers.
- * pClamFold   | 'dl.clamshell>dd, .clamfold'   | CSS selectors for accordion bodies.
- * pIconFam    | null                           | Class name for font family call.
- * pIconList   | null                           | Class name for toggle all icon.
- * pIconOpen   | null                           | Class name for open item indicator.
- * pIconClosed | null                           | Class name for closed item indicator.
- * pHidden     | 'hidden'                       | Class name for hidden elements.
- * pShow       | 'show'                         | Class name for visible elements.
- * pAuto       | true                           | Whether to automatically fold sections.
+ * name        | default                    | description
+ * ----        | -------                    | -----------
+ * pClamList   | '.clamshell, .example-box' | CSS selector for containers.
+ * pClamLabel  | 'dt, .clamheader'          | CSS selector for accordion headers.
+ * pClamFold   | 'dd, .clamfold'            | CSS selectors for accordion bodies.
+ * pIconFam    | null                       | Class name for font family call.
+ * pIconList   | null                       | Class name for toggle all icon.
+ * pIconOpen   | null                       | Class name for open item indicator.
+ * pIconClosed | null                       | Class name for closed item indicator.
+ * pHidden     | 'hidden'                   | Class name for hidden elements.
+ * pShow       | 'show'                     | Class name for visible elements.
+ * pAuto       | true                       | Whether to automatically fold sections.
  *
  * *** Initialize - Example --------------------------------------------------- *
  * let mp = {
@@ -47,26 +47,28 @@
  *   ...
  * };
  * --- Revision History ------------------------------------------------------- *
- * 2025-04-15 | Fixed keybaord operation and issues with nested DL.
- * 2025-03-10 | Added DOMContentLoaded handler to avoid edge cases.
+ * 2025-04-17 | Upward and downward propagation issues.
+ * 2025-04-15 | Fixed keyboard operation and issues with nested DL.
+ * 2025-03-10 | Switched to DOMContentLoaded handler to avoid some edge cases.
  * 2025-03-05 | Moved to a repo folder and documented
  * 2023-12-27 | Started new typescript / vanilla JS version
  * ---------------------------------------------------------------------------- */
 class mpc_clamshell {
-  constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dl.clamshell>dt, .clamheader', pClamfold = 'dl.clamshell>dd, .clamfold', pIconFam = null, pIconList = null, pIconOpen = null, pIconClosed = null, pHidden = 'hidden', pShow = 'show', pAuto = true) {
+  constructor(pClamlist = '.clamshell, dl.example-box', pClamlabel = 'dt, .clamheader', pClamfold = 'dd, .clamfold', pIconFam = null, pIconList = null, pIconOpen = null, pIconClosed = null, pHidden = 'hidden', pShow = 'show', pAuto = true) {
     this.headerIdx = 1;
     this.ico_family = pIconFam;
     this.ico_showall = pIconList;
     this.ico_open = pIconOpen;
     this.ico_closed = pIconClosed;
     this.tar_list = pClamlist;
+    this.tar_labelOnly = pClamlabel;
     this.arr_list = pClamlist.split(/,\s*/);
     this.arr_fold = pClamfold.split(/,\s*/);
     this.arr_label = pClamlabel.split(/,\s*/);
     // Create selectors for children using cartesian product.   *
     // Only need to join two, so no fancy abstractions.         *
-    this.tar_fold = (this.arr_list.map((x) => this.arr_fold.map((y) => x + ' ' + y))).join(',');
-    this.tar_label = (this.arr_list.map((x) => this.arr_label.map((y) => x + ' ' + y))).join(',');
+    this.tar_fold = (this.arr_list.map((x) => this.arr_fold.map((y) => x + '>' + y))).join(',');
+    this.tar_label = (this.arr_list.map((x) => this.arr_label.map((y) => x + '>' + y))).join(',');
     this.class_hidden = pHidden;
     window.addEventListener('DOMContentLoaded', (ev) => {
       this.cs_list = document.querySelectorAll(this.tar_list);
@@ -99,6 +101,7 @@ class mpc_clamshell {
     this.checkHash();
     window.addEventListener('hashchange', (el) => { this.checkHash(); });
     this.cs_label.forEach((el) => {
+      el.setAttribute('tabindex', '0');
       el.addEventListener('click', (ev) => { this.checkClick(ev.target.closest(this.tar_label)); });
       el.addEventListener('focusin', (ev) => {
         if (!(this.mouseTrigger)) {
@@ -110,19 +113,28 @@ class mpc_clamshell {
           this.checkClick(ev.target.closest(this.tar_label));
         }
       });
-      this.cs_block.forEach((el) => {
-        el.addEventListener('focusin', (ev) => {
-          let pLabel = (ev.target.closest(this.tar_fold)).previousElementSibling;
+    });
+    this.cs_block.forEach((el) => {
+      el.setAttribute('tabindex', '0');
+      el.addEventListener('focusin', (ev) => {
+        let tCurr = ev.target;
+        while ((tCurr.closest(this.tar_fold)).previousElementSibling) {
+          let tLabel = (tCurr.closest(this.tar_fold)).previousElementSibling;
           if (!(this.mouseTrigger)) {
-            this.checkClick(pLabel, 'Show ');
+            this.checkClick(tLabel, 'Show ');
           }
-        });
-        el.addEventListener('focusout', (ev) => {
-          let pLabel = (ev.target.closest(this.tar_fold)).previousElementSibling;
+          tCurr = tLabel.parentElement;
+        }
+      });
+      el.addEventListener('focusout', (ev) => {
+        let tCurr = ev.target;
+        while ((tCurr.closest(this.tar_fold)).previousElementSibling) {
+          let tLabel = (tCurr.closest(this.tar_fold)).previousElementSibling;
           if (!(this.mouseTrigger)) {
-            this.checkClick(pLabel, 'Hide ');
+            this.checkClick(tLabel, 'Hide ');
           }
-        });
+          tCurr = tLabel.parentElement;
+        }
       });
     });
   }
@@ -179,7 +191,7 @@ class mpc_clamshell {
       }
       tHeader.id = tHeaderString;
       tHeader.textContent = 'Show All';
-      el.setAttribute('tabindex', '0');
+      tHeader.setAttribute('tabindex', '0');
       el.prepend(tHeader);
       document.getElementById(tHeader.id)?.addEventListener('click', (ev) => { this.checkAll(ev.target); });
     });
@@ -252,7 +264,7 @@ class mpc_clamshell {
     let tDir = (tLabel == 'Show All') ? 'Show ' : 'Hide ';
     el.textContent = (tLabel == 'Show All') ? 'Hide All' : 'Show All';
     if (tList) {
-      let tItems = tList.querySelectorAll(this.tar_label);
+      let tItems = Array.prototype.filter.call(tList.children, tChild => tChild.matches(this.tar_labelOnly));
       if (tItems) {
         tItems.forEach((el) => {
           if (!el.classList.contains('list-header')) {

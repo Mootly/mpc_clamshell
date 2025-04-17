@@ -1,5 +1,7 @@
 # MoosePlum Clamshell / Accordion Fold Manager
 
+Repo: [Mootly/mpc_clamshell](https://github.com/Mootly/mpc_clamshell)
+
 This script does the following:
 
 - Collapse designated clamshell/accordion elements after page load.
@@ -18,6 +20,7 @@ The files in this set are as follows:
 
 | path                 | description                                        |
 | -------------------- | -------------------------------------------------- |
+| CHANGELOG.md         | The changelog for this page layout utility.        |
 | LICENSE.md           | License notice ( [MIT](https://mit-license.org) ). |
 | README.md            | This document.                                     |
 | clamshell.ts         | The class definition in TypeScript.                |
@@ -66,9 +69,11 @@ This script not fully tested for more than two levels of nesting. For accessibil
 
 Collapser immediately follows its heading.
 
+Headers and collapsers are immediate children of the `.clamshell` element. This is to help prevent problems with nesting collapsers.
+
 Same heading level is used for folds across page.
 
-For collapsing divisions, assumes the classes `clamshell`, `clamheader`, and `clamfold` for the three components of the clamshell: container, fold header, and fold body. Additional classes can be added but it will look for these and will add the appropriate class to fold headers if the container has a `use-h#` class specified.
+For collapsing divisions, assumes the classes `.clamshell`, `.clamheader`, and `.clamfold` for the three components of the clamshell: container, fold header, and fold body. Additional classes can be added but it will look for these and will add the appropriate class to fold headers if the container has a `use-h#` class specified.
 
 Clamshell headings that are to be linked to from external sources should have hard-coded Ids. Auto-generated IDs use tie-breaker strings to prevent duplicate IDs. This means the assigned ID can change if content elsewhere in the page changes.
 
@@ -110,18 +115,27 @@ Remember to adjust the font sizes of headings in accordion sections down from th
 
 ### Parameters
 
-| name        | type    | default                        | description                             |
-| ----------- | ------- | ------------------------------ | --------------------------------------- |
-| pClamList   | string  | '.clamshell, .example-box'     | CSS selector for containers.            |
-| pClamLabel  | string  | 'dl.clamshell>dt, .clamheader' | CSS selector for accordion headers.     |
-| pClamFold   | string  | 'dl.clamshell>dd, .clamfold'   | CSS selectors for accordion bodies.     |
-| pIconFam    | string  | null                           | Class name for font family call.        |
-| pIconList   | string  | null                           | Class name for toggle all icon.         |
-| pIconOpen   | string  | null                           | Class name for open item indicator.     |
-| pIconClosed | string  | null                           | Class name for closed item indicator.   |
-| pHidden     | string  | 'hidden'                       | Class name for hidden elements.         |
-| pShow       | string  | 'show'                         | Class name for visible elements.        |
-| pAuto       | boolean | true                           | Whether to automatically fold sections. |
+| name        | type    | default                    | description                             |
+| ----------- | ------- | -------------------------- | --------------------------------------- |
+| pClamList   | string  | '.clamshell, .example-box' | CSS selector for containers.            |
+| pClamLabel  | string  | 'dt, .clamheader'          | CSS selector for accordion headers.     |
+| pClamFold   | string  | 'dd, .clamfold'            | CSS selectors for accordion bodies.     |
+| pIconFam    | string  | null                       | Class name for font family call.        |
+| pIconList   | string  | null                       | Class name for toggle all icon.         |
+| pIconOpen   | string  | null                       | Class name for open item indicator.     |
+| pIconClosed | string  | null                       | Class name for closed item indicator.   |
+| pHidden     | string  | 'hidden'                   | Class name for hidden elements.         |
+| pShow       | string  | 'show'                     | Class name for visible elements.        |
+| pAuto       | boolean | true                       | Whether to automatically fold sections. |
+
+The `auto` flag serves two functions:
+
+- Whether to automatically redraw the page as part of the constructor operation or wait for the page to directly call the `setStates()` method.
+- Whether to automatically create contextual selectors from the selector strings provided or assume the context is included in the selector strings.
+
+If `auto=true` the script will create a cross-product selector list of `container>subselector` for labels and collapsing accordion bodies.
+
+If it is false, the constructor call will need to include contextual selector paths and the `setStates()` method will need to be called directly.
 
 The icon parameters are **required** but don't have a default. Their values depend on third party resources, so we can't just suggest you use a given class for them. Ths script was originally built on a site using Font Awesome 4, so the icon paramaters for that site were:
 
