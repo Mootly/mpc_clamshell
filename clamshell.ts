@@ -43,10 +43,14 @@
  *
  * *** Initialize - Example --------------------------------------------------- *
  * let mp = {
- *   rotator: new mpc_bannerRotator(container ID, box class, tab class, switch ID),
+ *   clamshell: new mpc_clamshell(
+ *     clam_list, clam_label, clam_fold, clam_icoFam, clam_icoList,
+ *     clam_icoOpen, clam_icoClosed, clam_hidden, clam_show, clam_auto
+ *   ),
  *   ...
  * };
  * --- Revision History ------------------------------------------------------- *
+ * 2025-04-23 | Corrected cut and paste error in comments..
  * 2025-04-17 | Upward and downward propagation issues.
  * 2025-04-15 | Fixed keyboard operation and issues with nested DL.
  * 2025-03-10 | Switched to DOMContentLoaded handler to avoid some edge cases.
