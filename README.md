@@ -75,7 +75,7 @@ Same heading level is used for folds across page.
 
 For collapsing divisions, assumes the classes `.clamshell`, `.clamheader`, and `.clamfold` for the three components of the clamshell: container, fold header, and fold body. Additional classes can be added but it will look for these and will add the appropriate class to fold headers if the container has a `use-h#` class specified.
 
-Clamshell headings that are to be linked to from external sources should have hard-coded Ids. Auto-generated IDs use tie-breaker strings to prevent duplicate IDs. This means the assigned ID can change if content elsewhere in the page changes.
+Clamshell headings that are to be linked to from external sources should have hard-coded IDs. Auto-generated IDs use tie-breaker strings to prevent duplicate IDs. This means the assigned ID can change if content elsewhere in the page changes.
 
 Original built with Font Awesome icons specified through CSS. Since it is jsut assigning classes you can swap that with anything you can specify through CSS.
 

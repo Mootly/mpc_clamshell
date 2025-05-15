@@ -1,8 +1,8 @@
 /** --- Clamshell Creator ----------------------------------------------------- *
-* mpc_clamshell 1.0.3
+* mpc_clamshell 1.0.4
  * @copyright 2023-2025 Mootly Obviate -- See /LICENSE.md
  * @license   MIT
- * @version   1.0.3
+ * @version   1.0.4
  * ---------------------------------------------------------------------------- *
  * Collapse any clamshell/accordion elements after page load.
  * ---------------------------------------------------------------------------- *
@@ -50,7 +50,8 @@
  *   ...
  * };
  * --- Revision History ------------------------------------------------------- *
- * 2025-04-23 | Corrected cut and paste error in comments..
+ * 2025-05-15 | Delayed hash check until after mssing ids are auto-generated.
+ * 2025-04-23 | Corrected cut and paste error in comments.
  * 2025-04-17 | Upward and downward propagation issues.
  * 2025-04-15 | Fixed keyboard operation and issues with nested DL.
  * 2025-03-10 | Switched to DOMContentLoaded handler to avoid some edge cases.
@@ -102,7 +103,7 @@ class mpc_clamshell {
     // yep, close everything then reopen what we want           *
     this.closeAll();
     this.addListHeaders();
-    this.checkHash();
+    window.addEventListener('DOMContentLoaded', (ev) => { this.checkHash(); });
     window.addEventListener('hashchange', (el) => { this.checkHash(); });
     this.cs_label.forEach((el) => {
       el.setAttribute('tabindex', '0');
@@ -195,7 +196,7 @@ class mpc_clamshell {
       }
       tHeader.id = tHeaderString;
       tHeader.textContent = 'Show All';
-      tHeader.setAttribute('tabindex', '0');
+      tHeader.setAttribute('tabindex', '-1');
       el.prepend(tHeader);
       document.getElementById(tHeader.id)?.addEventListener('click', (ev) => { this.checkAll(ev.target); });
     });
